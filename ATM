@@ -4,8 +4,6 @@
 3.Check Balance
 4.Save transaction history to a file
 
-C++ Program
-C++
 #include <iostream>
 #include <fstream>
 using namespace std;
