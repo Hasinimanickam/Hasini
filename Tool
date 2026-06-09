@@ -1,0 +1,138 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <chrono>
+#include <cstdlib>
+using namespace std;
+using namespace chrono;
+
+// Linear Search
+int linearSearch(vector<int>& arr, int key) {
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] == key)
+            return i;
+    }
+    return -1;
+}
+
+// Binary Search
+int binarySearch(vector<int>& arr, int key) {
+    int low = 0, high = arr.size() - 1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+
+        if (arr[mid] == key)
+            return mid;
+        else if (arr[mid] < key)
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+
+    return -1;
+}
+
+// Bubble Sort
+void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+
+    for (int i = 0; i < n - 1; i++) {
+        bool swapped = false;
+
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+            break;
+    }
+}
+
+// Merge Sort
+void merge(vector<int>& arr, int left, int mid, int right) {
+    vector<int> temp;
+    int i = left, j = mid + 1;
+
+    while (i <= mid && j <= right) {
+        if (arr[i] <= arr[j])
+            temp.push_back(arr[i++]);
+        else
+            temp.push_back(arr[j++]);
+    }
+
+    while (i <= mid)
+        temp.push_back(arr[i++]);
+
+    while (j <= right)
+        temp.push_back(arr[j++]);
+
+    for (int k = 0; k < temp.size(); k++)
+        arr[left + k] = temp[k];
+}
+
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    int n = 10000;
+    vector<int> data(n);
+
+    // Generate random data
+    for (int i = 0; i < n; i++)
+        data[i] = rand() % 100000;
+
+    vector<int> bubbleData = data;
+    vector<int> mergeData = data;
+
+    // Bubble Sort timing
+    auto start = high_resolution_clock::now();
+    bubbleSort(bubbleData);
+    auto end = high_resolution_clock::now();
+
+    cout << "Bubble Sort Time: "
+         << duration_cast<milliseconds>(end - start).count()
+         << " ms\n";
+
+    // Merge Sort timing
+    start = high_resolution_clock::now();
+    mergeSort(mergeData, 0, mergeData.size() - 1);
+    end = high_resolution_clock::now();
+
+    cout << "Merge Sort Time: "
+         << duration_cast<milliseconds>(end - start).count()
+         << " ms\n";
+
+    int key = mergeData[n / 2];
+
+    // Linear Search timing
+    start = high_resolution_clock::now();
+    linearSearch(mergeData, key);
+    end = high_resolution_clock::now();
+
+    cout << "Linear Search Time: "
+         << duration_cast<nanoseconds>(end - start).count()
+         << " ns\n";
+
+    // Binary Search timing
+    start = high_resolution_clock::now();
+    binarySearch(mergeData, key);
+    end = high_resolution_clock::now();
+
+    cout << "Binary Search Time: "
+         << duration_cast<nanoseconds>(end - start).count()
+         << " ns\n";
+
+    return 0;
+}
